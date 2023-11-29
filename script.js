@@ -99,6 +99,7 @@ function updateScatterPlot(filtered_data) {
       tooltip.style('display', 'inline-block')
         .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
                 Team: ${d.Tm}<br/>
+                Age: ${d.Age}<br/>
                 Position: ${d.Pos}<br/>
                 Points Per Game: ${d.PTS}<br/>
                 Assists Per Game: ${d.AST}<br/>
@@ -107,7 +108,10 @@ function updateScatterPlot(filtered_data) {
                 2-point Field Goal Percentage: ${d['2P%']}<br/>
                 3-point Field Goal Percentage: ${d['3P%']}<br/>
                 Effective Field Goal Percentage: ${d['eFG%']}<br/>
+                Total Grames Played: ${d['G']}<br/>
               `)
+              // 2-point field goals per game: ${d['2P']}<br/>
+              //   3-point field goals per game: ${d['3P']}<br/>
         .style('left', `${event.pageX}px`)
         .style('top', `${event.pageY}px`);
     })
@@ -157,6 +161,40 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
   opacityScale = d3.scaleLinear()
     .domain(d3.extent(data, d => parseFloat(d['eFG%'])))
     .range([0.1, 1]);
+
+  y = height - 150
+  svg.append("text")
+    .attr("x", width + 10)
+    .attr("y", y + 10)
+    .style("font-size", "13px")
+    .style("font-weight", "bold")
+    .text("Positions");
+
+  // Existing legend code
+  let legend = svg.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 10)
+    .attr("text-anchor", "end")
+    .selectAll("g")
+    .data(positions.slice(1)) // use positions array here
+    .enter().append("g")
+    .attr("transform", function (d, i) { return "translate(0," + (i * 20 + 20) + ")"; });  // Adjust y-position to leave room for title
+
+  // Draw legend colored rectangles
+  legend.append("rect")
+    .attr("x", width + 11)
+    .attr("y", y)
+    .attr("width", 19)
+    .attr("height", 19)
+    .attr("fill", colorScale);
+
+  // Draw legend text
+  legend.append("text")
+    .attr("x", width + 40)
+    .attr("y", y + 10)
+    .attr("dy", "0.32em")
+    .style("text-anchor", "start") 
+    .text(function (d) { return d; });
 
   let teamDropdown = d3.select("#teamDropdown").on("change", updateVisualization);
   let posDropdown = d3.select("#posDropdown").on("change", updateVisualization);
