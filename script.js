@@ -97,13 +97,17 @@ function updateScatterPlot(filtered_data) {
     .on('mouseover', function (event, d) { // d is the datum of the circle, event is the actual event
       console.log("hi")
       tooltip.style('display', 'inline-block')
-        .html(`Player: ${d.Player}<br/> 
-                  Team: ${d.Tm}<br/>
-                  Position: ${d.Pos}<br/>
-                  Assists Per Game: ${d.AST}<br/>
-                  Points Per Game: ${d.PTS}<br/>
-                  Effective Field Goal Percentage: ${d['eFG%']}<br/>
-                  `)
+        .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
+                Team: ${d.Tm}<br/>
+                Position: ${d.Pos}<br/>
+                Points Per Game: ${d.PTS}<br/>
+                Assists Per Game: ${d.AST}<br/>
+                Rebounds Per Game: ${d.TRB}<br/>
+                Blocks Per Game: ${d.BLK}<br/>
+                2-point Field Goal Percentage: ${d['2P%']}<br/>
+                3-point Field Goal Percentage: ${d['3P%']}<br/>
+                Effective Field Goal Percentage: ${d['eFG%']}<br/>
+              `)
         .style('left', `${event.pageX}px`)
         .style('top', `${event.pageY}px`);
     })
@@ -117,21 +121,18 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
   console.log(data);
 
   svg = d3.select("#graph")
-  .append('svg')
-  .attr('width', svgWidth)
-  .attr('height', svgHeight);
-chartGroup = svg.append('g')
-  .attr('transform', `translate(${margin.left},${margin.top})`);
+    .append('svg')
+    .attr('width', svgWidth)
+    .attr('height', svgHeight);
+  chartGroup = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
 
-tooltip = d3.select('#options')
-  .append('div')
-  .attr('class', 'tooltip')
-  .style('display', 'none');
+  tooltip = d3.select('#options')
+    .append('div')
+    .attr('class', 'tooltip')
+    .style('display', 'none');
 
-  // Define min and max age in the dataset
-  let minAge = d3.min(data, d => d.Age);
-  let maxAge = d3.max(data, d => d.Age);
   let teams = ['All'], positions = ['All'];
   data.forEach(function (d) {
     if (teams.indexOf(d.Tm) === -1) teams.push(d.Tm);
@@ -168,23 +169,32 @@ tooltip = d3.select('#options')
     .enter().append("option")
     .text(function (d) { return d; });
 
-  var ageSlider = new rSlider({
-    target: '#ageSlider',
-    values: { min: minAge, max: maxAge },
-    step: 1,
-    range: true,
-    set: [minAge, maxAge],
-    tooltip: true,
-    scale: false,
-    labels: false,
-    width: 250,
-    onChange: function (values) {
-      var ageValues = values.split(',');
-      minAge = ageValues[0];
-      maxAge = ageValues[1];
-      updateVisualization();
-    }
-  });
+  function createSlider(target, values, initial, step) {
+    return new rSlider({
+      target: target,
+      values: values,
+      step: step,
+      range: true,
+      set: initial,
+      tooltip: true,
+      scale: false,
+      labels: false,
+      width: 250,
+      onChange: function (values) {
+        updateVisualization();
+      }
+    });
+  }
+
+  let minAge = d3.min(data, d => d.Age);
+  let maxAge = d3.max(data, d => d.Age);
+  let min2P = d3.min(data, d => d['2P%']);
+  let max2P = d3.max(data, d => d['2P%']);
+  let min3P = d3.min(data, d => d['3P%']);
+  let max3P = d3.max(data, d => d['3P%']);
+  var ageSlider = createSlider('#ageSlider', { min: minAge, max: maxAge }, [minAge, maxAge], 1);
+  var twoPointSlider = createSlider('#twoPointSlider', { min: min2P, max: max2P }, [min2P, max2P], 0.01);
+  var threePointSlider = createSlider('#threePointSlider', { min: min3P, max: max3P }, [min3P, max3P], 0.01);
 
   // Initialize data
   updateScatterPlot(data);
@@ -194,6 +204,10 @@ tooltip = d3.select('#options')
     // Get current selections
     let selectedTeam = teamDropdown.node().value;
     let selectedPosition = posDropdown.node().value;
+    let ageValues = ageSlider.getValue().split(',');
+    let threePointValues = threePointSlider.getValue().split(',');
+    let twoPointValues = twoPointSlider.getValue().split(',');
+    console.log(ageValues);
 
     // Filter data based on selections
     let filtered_data = data.filter(function (d) {
@@ -201,7 +215,9 @@ tooltip = d3.select('#options')
       return (
         (d.Tm === selectedTeam || selectedTeam === 'All') &&
         (d.Pos === selectedPosition || selectedPosition === 'All') &&
-        (parseFloat(d.Age) >= parseFloat(minAge) && parseFloat(d.Age) <= parseFloat(maxAge))
+        (parseFloat(d.Age) >= parseFloat(ageValues[0]) && parseFloat(d.Age) <= parseFloat(ageValues[1])) &&
+        (parseFloat(d['3P%']) >= parseFloat(threePointValues[0]) && parseFloat(d['3P%']) <= parseFloat(threePointValues[1])) &&
+        (parseFloat(d['2P%']) >= parseFloat(twoPointValues[0]) && parseFloat(d['2P%']) <= parseFloat(twoPointValues[1]))
       );
     })
     console.log(filtered_data);
