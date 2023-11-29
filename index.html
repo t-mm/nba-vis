@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+    <link rel="stylesheet" href="https://slawomir-zaziablo.github.io/range-slider/css/rSlider.min.css">
+    <script src="https://slawomir-zaziablo.github.io/range-slider/js/rSlider.min.js"></script>
+    <style>
+        #options>div {
+            margin: 0 0 20px 20px;
+        }
+
+        .rs-tooltip {
+            top: 60px;
+            min-width: 0px;
+        }
+
+        .rs-container {
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+    </style>
+    <title>D3 Visualization</title>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js"></script>
+    <h1 style="margin-left: 70px;">NBA Player Finder</h1>
+    <div style="display: flex;">
+        <div id="graph">
+
+        </div>
+        <div id="options">
+            <div>
+                <label for="teamDropdown">Team:</label>
+                <select id="teamDropdown" style="margin-right: 10px;"></select>
+                <label for="posDropdown">Position:</label>
+                <select id="posDropdown"></select>
+            </div>
+            <div>
+                <label for="ageSlider" id="ageLabel">Age:</label>
+                <input type="text" id="ageSlider" />
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
