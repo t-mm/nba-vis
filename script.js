@@ -182,7 +182,7 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
 
   // Draw legend colored rectangles
   legend.append("rect")
-    .attr("x", width + 11)
+    .attr("x", width)
     .attr("y", y)
     .attr("width", 19)
     .attr("height", 19)
@@ -197,9 +197,9 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
   };
   // Draw legend text
   legend.append("text")
-    .attr("x", width + 65)
+    .attr("x", width + 20)
     .attr("y", y + 10)
-    .attr("dy", "0.32em")
+    .attr("dy", "0.28em")
     .style("text-anchor", "start") 
     .text(function (d) { return positionNames[d]; });
 
