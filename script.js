@@ -106,10 +106,7 @@ function updateScatterPlot(filtered_data) {
     .attr("r", d => radiusScale(d.TRB))  // now the radius is adjusted based on blocks per game
     // .style("fill", "steelblue")
     .style("fill", d => colorScale(d.Pos)) // Color is set based on the player's position
-    .style("opacity", d => opacityScale(d['eFG%']));
-
-  // Add tooltip to each circle
-  chartGroup.selectAll("circle")
+    .style("opacity", d => opacityScale(d['eFG%']))
     .on('click', function(event, d) {
       // Toggle player selection on click
       selectPlayer(d);
