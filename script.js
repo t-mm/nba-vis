@@ -43,46 +43,6 @@ let svg;
 let chartGroup;
 let tooltip;
 
-let selectedPlayers = [];
-function displayPlayerStats() {
-  let statsDiv = d3.select('#playerStats');
-  statsDiv.html(""); // Clear existing content
-
-  selectedPlayers.forEach(player => {
-      let playerDiv = statsDiv.append('div');
-      playerDiv.html(`<h3>${player.Player}</h3>
-                      <p>Team: ${player.Tm}</p>
-                      <p>Age: ${player.Age}</p>
-                      <p>Position: ${player.Pos}</p>
-                      <p>Points Per Game: ${player.PTS}</p>
-                      <p>Assists Per Game: ${player.AST}</p>
-                      <p>Rebounds Per Game: ${player.TRB}</p>
-                      <p>Blocks Per Game: ${player.BLK}</p>
-                      <p>2-point Field Goal Percentage: ${player['2P%']}</p>
-                      <p>3-point Field Goal Percentage: ${player['3P%']}</p>
-                      <p>Effective Field Goal Percentage: ${player['eFG%']}</p>
-                      <p>Total Games Played: ${player['G']}</p>
-                      <hr>`);
-  });
-}
-
-
-function selectPlayer(d) {
-  const index = selectedPlayers.findIndex(p => p.Player === d.Player);
-  if (index > -1) {
-    selectedPlayers.splice(index, 1); // Remove player if already selected
-  } else if (selectedPlayers.length < 2) {
-    selectedPlayers.push(d); // Add player if not already selected and less than 2 players are selected
-  }
-  updateScatterPlot(data); // Update the plot to reflect changes
-  displayPlayerStats();
-}
-d3.select("#refreshButton").on("click", resetSelection);
-function resetSelection() {
-  selectedPlayers = [];
-  updateScatterPlot(data);
-  displayPlayerStats();
-}
 
 // Function to draw scatter plot based on filtered data
 function updateScatterPlot(filtered_data) {
@@ -130,67 +90,35 @@ function updateScatterPlot(filtered_data) {
     .attr("r", d => radiusScale(d.TRB))  // now the radius is adjusted based on blocks per game
     // .style("fill", "steelblue")
     .style("fill", d => colorScale(d.Pos)) // Color is set based on the player's position
-    .style("opacity", d => opacityScale(d['eFG%']))
-    .on('click', function(event, d) {
-      // Toggle player selection on click
-      selectPlayer(d);
+    .style("opacity", d => opacityScale(d['eFG%']));
 
-      // Redraw the circles to reflect selection changes
-      d3.selectAll('circle')
-        .style('stroke', 'none')
-        .style('stroke-width', '0');
-
-      // Highlight selected players
-      selectedPlayers.forEach(sp => {
-        d3.selectAll('circle')
-          .filter(p => p.Player === sp.Player)
-          .style('stroke', 'yellow')
-          .style('stroke-width', '2');
-          
-      });
-      selectedPlayers.forEach(sp => {
-        tooltip.style('display', 'inline-block')
-          .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
-                  Team: ${d.Tm}<br/>
-                  Age: ${d.Age}<br/>
-                  Position: ${d.Pos}<br/>
-                  Points Per Game: ${d.PTS}<br/>
-                  Assists Per Game: ${d.AST}<br/>
-                  Rebounds Per Game: ${d.TRB}<br/>
-                  Blocks Per Game: ${d.BLK}<br/>
-                  2-point Field Goal Percentage: ${d['2P%']}<br/>
-                  3-point Field Goal Percentage: ${d['3P%']}<br/>
-                  Effective Field Goal Percentage: ${d['eFG%']}<br/>
-                  Total Games Played: ${d['G']}<br/>`)
-          .style('left', `${event.pageX}px`)
-          .style('top', `${event.pageY}px`);
-      });
-    })
-
-    .on('mouseover', function(event, d) {
-      // Display tooltip only if less than 2 players are selected
-      if (selectedPlayers.length < 2) {
-        tooltip.style('display', 'inline-block')
-          .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
-                  Team: ${d.Tm}<br/>
-                  Age: ${d.Age}<br/>
-                  Position: ${d.Pos}<br/>
-                  Points Per Game: ${d.PTS}<br/>
-                  Assists Per Game: ${d.AST}<br/>
-                  Rebounds Per Game: ${d.TRB}<br/>
-                  Blocks Per Game: ${d.BLK}<br/>
-                  2-point Field Goal Percentage: ${d['2P%']}<br/>
-                  3-point Field Goal Percentage: ${d['3P%']}<br/>
-                  Effective Field Goal Percentage: ${d['eFG%']}<br/>
-                  Total Games Played: ${d['G']}<br/>`)
-          .style('left', `${event.pageX}px`)
-          .style('top', `${event.pageY}px`);
-      }
+  // Add tooltip to each circle
+  chartGroup.selectAll("circle")
+    .on('mouseover', function (event, d) { // d is the datum of the circle, event is the actual event
+      console.log("hi")
+      tooltip.style('display', 'inline-block')
+        .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
+                Team: ${d.Tm}<br/>
+                Age: ${d.Age}<br/>
+                Position: ${d.Pos}<br/>
+                Points Per Game: ${d.PTS}<br/>
+                Assists Per Game: ${d.AST}<br/>
+                Rebounds Per Game: ${d.TRB}<br/>
+                Blocks Per Game: ${d.BLK}<br/>
+                2-point Field Goal Percentage: ${d['2P%']}<br/>
+                3-point Field Goal Percentage: ${d['3P%']}<br/>
+                Effective Field Goal Percentage: ${d['eFG%']}<br/>
+                Total Games Played: ${d['G']}<br/>
+              `)
+              // 2-point field goals per game: ${d['2P']}<br/>
+              //   3-point field goals per game: ${d['3P']}<br/>
+        .style('left', `${event.pageX}px`)
+        .style('top', `${event.pageY}px`);
     })
     .on('mouseout', function () {
       tooltip.style('display', 'none');
     });
-
+}
 
 d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
   data = data.map(typeData);
@@ -236,7 +164,7 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
 
   y = height - 150
   svg.append("text")
-    .attr("x", width)
+    .attr("x", width + 10)
     .attr("y", y + 10)
     .style("font-size", "13px")
     .style("font-weight", "bold")
