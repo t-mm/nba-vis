@@ -37,7 +37,9 @@ let xScale = null;
 let yScale = null
 let radiusScale = null
 let opacityScale = null
-let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+let colorScale = d3.scaleOrdinal()
+      .domain(positions)
+      .range(["#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"]);
 
 let svg;
 let chartGroup;
