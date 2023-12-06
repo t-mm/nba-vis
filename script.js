@@ -44,6 +44,28 @@ let chartGroup;
 let tooltip;
 
 let selectedPlayers = [];
+function displayPlayerStats() {
+  let statsDiv = d3.select('#playerStats');
+  statsDiv.html(""); // Clear existing content
+
+  selectedPlayers.forEach(player => {
+      let playerDiv = statsDiv.append('div');
+      playerDiv.html(`<h3>${player.Player}</h3>
+                      <p>Team: ${player.Tm}</p>
+                      <p>Age: ${player.Age}</p>
+                      <p>Position: ${player.Pos}</p>
+                      <p>Points Per Game: ${player.PTS}</p>
+                      <p>Assists Per Game: ${player.AST}</p>
+                      <p>Rebounds Per Game: ${player.TRB}</p>
+                      <p>Blocks Per Game: ${player.BLK}</p>
+                      <p>2-point Field Goal Percentage: ${player['2P%']}</p>
+                      <p>3-point Field Goal Percentage: ${player['3P%']}</p>
+                      <p>Effective Field Goal Percentage: ${player['eFG%']}</p>
+                      <p>Total Games Played: ${player['G']}</p>
+                      <hr>`);
+  });
+}
+
 
 function selectPlayer(d) {
   const index = selectedPlayers.findIndex(p => p.Player === d.Player);
@@ -53,11 +75,13 @@ function selectPlayer(d) {
     selectedPlayers.push(d); // Add player if not already selected and less than 2 players are selected
   }
   updateScatterPlot(data); // Update the plot to reflect changes
+  displayPlayerStats();
 }
-
+d3.select("#refreshButton").on("click", resetSelection);
 function resetSelection() {
   selectedPlayers = [];
   updateScatterPlot(data);
+  displayPlayerStats();
 }
 
 // Function to draw scatter plot based on filtered data
