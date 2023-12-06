@@ -108,7 +108,7 @@ function updateScatterPlot(filtered_data) {
                 2-point Field Goal Percentage: ${d['2P%']}<br/>
                 3-point Field Goal Percentage: ${d['3P%']}<br/>
                 Effective Field Goal Percentage: ${d['eFG%']}<br/>
-                Total Grames Played: ${d['G']}<br/>
+                Total Games Played: ${d['G']}<br/>
               `)
               // 2-point field goals per game: ${d['2P']}<br/>
               //   3-point field goals per game: ${d['3P']}<br/>
@@ -187,14 +187,21 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
     .attr("width", 19)
     .attr("height", 19)
     .attr("fill", colorScale);
-
+  // encoding
+  let positionNames = {
+    "C": "Center",
+    "SG": "Shooting Guard",
+    "PF": "Power Forward",
+    "PG": "Point Guard",
+    "SF": "Small Forward"
+  };
   // Draw legend text
   legend.append("text")
     .attr("x", width + 40)
     .attr("y", y + 10)
     .attr("dy", "0.32em")
     .style("text-anchor", "start") 
-    .text(function (d) { return d; });
+    .text(function (d) { return positionNames[d]; });
 
   let teamDropdown = d3.select("#teamDropdown").on("change", updateVisualization);
   let posDropdown = d3.select("#posDropdown").on("change", updateVisualization);
