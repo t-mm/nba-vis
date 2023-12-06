@@ -147,6 +147,22 @@ function updateScatterPlot(filtered_data) {
           .style('stroke', 'yellow')
           .style('stroke-width', '2');
       });
+      selectedPlayers.forEach(sp => {
+        tooltip.style('display', 'inline-block')
+          .html(`<span style="font-size: larger; font-weight: bold;">Player: ${d.Player}</span><br/>
+                  Team: ${d.Tm}<br/>
+                  Age: ${d.Age}<br/>
+                  Position: ${d.Pos}<br/>
+                  Points Per Game: ${d.PTS}<br/>
+                  Assists Per Game: ${d.AST}<br/>
+                  Rebounds Per Game: ${d.TRB}<br/>
+                  Blocks Per Game: ${d.BLK}<br/>
+                  2-point Field Goal Percentage: ${d['2P%']}<br/>
+                  3-point Field Goal Percentage: ${d['3P%']}<br/>
+                  Effective Field Goal Percentage: ${d['eFG%']}<br/>
+                  Total Games Played: ${d['G']}<br/>`)
+          .style('left', `${event.pageX}px`)
+          .style('top', `${event.pageY}px`);
     })
     .on('mouseover', function(event, d) {
       // Display tooltip only if less than 2 players are selected
