@@ -197,7 +197,7 @@ d3.csv("2022-2023 NBA Player Stats - Regular.csv").then(function (data) {
   };
   // Draw legend text
   legend.append("text")
-    .attr("x", width + 40)
+    .attr("x", width + 65)
     .attr("y", y + 10)
     .attr("dy", "0.32em")
     .style("text-anchor", "start") 
